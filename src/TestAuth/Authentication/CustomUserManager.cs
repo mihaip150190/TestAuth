@@ -9,17 +9,17 @@ using AutoMapper.QueryableExtensions;
 
 namespace TestAuth.Authentication
 {
-    public class CustomUserManager : IUserManager
+    public class CustomUserManager<TUser> : IUserManager<TUser> where TUser : BasicUser
     {
         private AuthContext _context;
-        private IPasswordHasher<BasicUser> _hasher;
+        private IPasswordHasher<TUser> _hasher;
 
-        public CustomUserManager(AuthContext context, IPasswordHasher<BasicUser> passwordHasher){
+        public CustomUserManager(AuthContext context, IPasswordHasher<TUser> passwordHasher){
             _context = context;
             _hasher = passwordHasher;
         }
 
-        public bool CheckPassword(BasicUser user, string password)
+        public bool CheckPassword(TUser user, string password)
         {
             if (user == null)
             {
@@ -33,7 +33,7 @@ namespace TestAuth.Authentication
             return success;
         }
 
-        public async Task<IdentityResult> CreateAsync(BasicUser user, string password)
+        public async Task<IdentityResult> CreateAsync(TUser user, string password)
         {
             try
             {
@@ -64,9 +64,9 @@ namespace TestAuth.Authentication
             
         }
 
-        public async Task<BasicUser> FindByNameAsync(string userName)
+        public async Task<TUser> FindByNameAsync(string userName)
         {
-            return await _context.User.Where(r => r.Username == userName).ProjectTo<BasicUser>().FirstOrDefaultAsync();
+            return await _context.User.Where(r => r.Username == userName).ProjectTo<TUser>().FirstOrDefaultAsync();
         }
 
         public async Task<string> GetRoleByIdAsync(int roleId)
@@ -74,7 +74,7 @@ namespace TestAuth.Authentication
             return await _context.Role.Where(r => r.RoleID == roleId).Select(s => s.Description).FirstOrDefaultAsync();
         }
 
-        private void SetPasswordHash(BasicUser user, string password)
+        private void SetPasswordHash(TUser user, string password)
         {
             user.Password = _hasher.HashPassword(user, password);
         }

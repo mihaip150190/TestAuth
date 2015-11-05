@@ -10,6 +10,7 @@ using TestAuth.AuthModels;
 using Microsoft.AspNet.Identity;
 using Microsoft.Framework.DependencyInjection.Extensions;
 using TestAuth.Authentication;
+using TestAuth.Extensions;
 
 namespace TestAuth
 {
@@ -47,8 +48,7 @@ namespace TestAuth
                     options.UseSqlServer(Configuration["Data:DefaultConnection:AuthContext"]));
 
             // Add Identity services to the services container.
-            //services.AddIdentity<ApplicationUser, IdentityRole>()
-            //    .AddDefaultTokenProviders();
+            services.AddCustomIdentity<CustomUser>();
 
             // Add MVC services to the services container.
             services.AddMvc();
@@ -58,10 +58,7 @@ namespace TestAuth
             // services.AddWebApiConventions();
 
             // Register application services.
-            services.TryAddScoped<IPasswordHasher<BasicUser>, PasswordHasher<BasicUser>>();
-            services.TryAddScoped<IUserManager, CustomUserManager>();
-            services.TryAddScoped<ISignInManager, CustomSignInManager>();
-            services.TryAddSingleton<IdentityMarkerService>();
+            
         }
 
         // Configure is called after ConfigureServices is called.

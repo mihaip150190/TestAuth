@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace TestAuth.Authentication
 {
-    public interface IUserManager
+    public interface IUserManager<TUser> where TUser : BasicUser
     {
-         Task<IdentityResult> CreateAsync(BasicUser user, string password);
+         Task<IdentityResult> CreateAsync(TUser user, string password);
          Task<string> GetRoleByIdAsync(int roleId);
-         Task<BasicUser> FindByNameAsync(string userName);
-         bool CheckPassword(BasicUser user, string password);
+         Task<TUser> FindByNameAsync(string userName);
+         bool CheckPassword(TUser user, string password);
     }
 }

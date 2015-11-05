@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace TestAuth.Authentication
 {
-    public interface ISignInManager
+    public interface ISignInManager<TUser> where TUser : BasicUser
     {
         Task<SignInResult> PasswordSignInAsync(string email, string password, bool rememberMe);
-        Task SignInAsync(BasicUser user, bool isPersistent, string authenticationMethod = null);
+        Task SignInAsync(TUser user, bool isPersistent, string authenticationMethod = null);
         Task SignOutAsync();
     }
 }

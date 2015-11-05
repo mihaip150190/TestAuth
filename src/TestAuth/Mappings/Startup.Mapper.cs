@@ -9,6 +9,9 @@ namespace TestAuth
         {
             AutoMapper.Mapper.CreateMap<BasicUser, User>();
             AutoMapper.Mapper.CreateMap<User, BasicUser>();
+
+            AutoMapper.Mapper.CreateMap<CustomUser, User>();
+            AutoMapper.Mapper.CreateMap<User, CustomUser>();
         }
     }
 }

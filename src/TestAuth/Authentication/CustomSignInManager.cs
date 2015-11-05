@@ -10,13 +10,13 @@ using System.Security.Claims;
 
 namespace TestAuth.Authentication
 {
-    public class CustomSignInManager : ISignInManager
+    public class CustomSignInManager<TUser> : ISignInManager<TUser> where TUser : BasicUser
     {
         private HttpContext _context;
         private IdentityOptions _options;
-        private IUserManager _userManager;
+        private IUserManager<TUser> _userManager;
 
-        public CustomSignInManager(IHttpContextAccessor contextAccessor, IOptions<IdentityOptions> optionsAccessor, IUserManager userManager)
+        public CustomSignInManager(IHttpContextAccessor contextAccessor, IOptions<IdentityOptions> optionsAccessor, IUserManager<TUser> userManager)
         {
             if (contextAccessor == null || contextAccessor.HttpContext == null)
             {
@@ -41,7 +41,7 @@ namespace TestAuth.Authentication
 
         
 
-        public async Task SignInAsync(BasicUser user, bool isPersistent, string authenticationMethod = null)
+        public async Task SignInAsync(TUser user, bool isPersistent, string authenticationMethod = null)
         {
             await SignInAsync(user, new AuthenticationProperties { IsPersistent = isPersistent }, authenticationMethod);
         }
@@ -51,7 +51,7 @@ namespace TestAuth.Authentication
             await _context.Authentication.SignOutAsync(_options.Cookies.ApplicationCookieAuthenticationScheme);
         }
 
-        private async Task SignInAsync(BasicUser user, AuthenticationProperties authenticationProperties, string authenticationMethod)
+        private async Task SignInAsync(TUser user, AuthenticationProperties authenticationProperties, string authenticationMethod)
         {
             var userPrincipal = await CreateUserPrincipalAsync(user);
             if (authenticationMethod != null)
@@ -80,7 +80,7 @@ namespace TestAuth.Authentication
             return new ClaimsPrincipal(id);
         }
 
-        private async Task<SignInResult> PasswordSignInAsync(BasicUser user, string password, bool rememberMe)
+        private async Task<SignInResult> PasswordSignInAsync(TUser user, string password, bool rememberMe)
         {
             if(user == null)
             {

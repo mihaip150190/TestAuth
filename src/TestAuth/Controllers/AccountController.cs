@@ -16,13 +16,13 @@ namespace TestAuth.Controllers
     [Authorize]
     public class AccountController : Controller
     {
-        private readonly IUserManager _userManager;
-        private readonly ISignInManager _signInManager;
+        private readonly IUserManager<CustomUser> _userManager;
+        private readonly ISignInManager<CustomUser> _signInManager;
 
 
         public AccountController(
-            IUserManager userManager,
-            ISignInManager signInManager
+            IUserManager<CustomUser> userManager,
+            ISignInManager<CustomUser> signInManager
             )
         {
             _userManager = userManager;
@@ -85,7 +85,7 @@ namespace TestAuth.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new BasicUser { Username = model.Email, RoleID = 1 , Email = model.Email};
+                var user = new CustomUser { Username = model.Email, RoleID = 1 , Email = model.Email, CustomProperty = "test"};
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
