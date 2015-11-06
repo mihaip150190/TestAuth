@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html>
+<html ng-app="SimpleRESTWebsite">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -20,40 +20,32 @@
             <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
         </environment>
     </head>
-    <body>
-        <div class="navbar navbar-inverse navbar-fixed-top">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a asp-controller="Home" asp-action="Index" class="navbar-brand">TestAuth</a>
-                </div>
-                <div class="navbar-collapse collapse">
-                    <ul class="nav navbar-nav">
-                        <li><a asp-controller="Home" asp-action="Index">Home</a></li>
-                        <li><a asp-controller="Home" asp-action="About">About</a></li>
-                        <li><a asp-controller="Home" asp-action="Contact">Contact</a></li>
-                    </ul>
-                    @await Html.PartialAsync("_LoginPartial")
+    <body ng-controller="MainCtrl as main" ng-cloak>
+        <nav class="navbar navbar-default">
+            <button ng-if="main.currentUser" class="btn btn-default navbar-btn"
+                    ng-click="main.logout()">
+                Logout <strong>{{main.currentUser.email}}</strong>
+            </button>
+            <a ng-if="!main.currentUser" class="btn btn-default navbar-btn"
+                    ui-sref="login">
+                Login
+            </a>
+        </nav>
+        <div class="container-fluid">
+            <div class="row">
+                <div ui-view>
+                    @RenderBody()
                 </div>
             </div>
         </div>
-        <div class="container body-content">
-            @RenderBody()
-            <hr />
-            <footer>
-                <p>&copy; 2015 - TestAuth</p>
-            </footer>
-        </div>
-
         <environment names="Development">
             <script src="~/lib/jquery/dist/jquery.js"></script>
             <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
             <script src="~/lib/hammer.js/hammer.js"></script>
             <script src="~/lib/bootstrap-touch-carousel/dist/js/bootstrap-touch-carousel.js"></script>
+            <script src="~/lib/angular/angular.js"></script>
+            <script src="~/lib/angular-local-storage/dist/angular-local-storage.js"></script>
+            <script src="~/lib/angular-ui-router/release/angular-ui-router.js"></script>
             <script src="~/js/site.js" asp-append-version="true"></script>
         </environment>
         <environment names="Staging,Production">

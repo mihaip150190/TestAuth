@@ -7,7 +7,7 @@ namespace TestAuth.AuthModels
     {
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            options.UseSqlServer(@"data source=.;initial catalog=TestAuth;user id=sa;password=sa;MultipleActiveResultSets=True");
+            options.UseSqlServer(@"data source=salia-sql;initial catalog=TestAuth;user id=sa;MultipleActiveResultSets=True");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

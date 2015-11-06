@@ -43,7 +43,6 @@ namespace TestAuth.Controllers
         // POST: /Account/Login
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
@@ -80,7 +79,6 @@ namespace TestAuth.Controllers
         // POST: /Account/Register
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
@@ -90,17 +88,16 @@ namespace TestAuth.Controllers
                 if (result.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction(nameof(HomeController.Index), "Home");
+                    return new HttpOkResult();
                 }
                 AddErrors(result);
             }
 
             // If we got this far, something failed, redisplay form
-            return View(model);
+            return HttpUnauthorized();
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> LogOff()
         {
             await _signInManager.SignOutAsync();
