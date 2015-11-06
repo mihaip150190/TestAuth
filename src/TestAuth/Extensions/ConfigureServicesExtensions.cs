@@ -12,6 +12,7 @@ namespace TestAuth.Extensions
             services.TryAddScoped<IPasswordHasher<TUser>, PasswordHasher<TUser>>();
             services.TryAddScoped<IUserManager<TUser>, CustomUserManager<TUser>>();
             services.TryAddScoped<ISignInManager<TUser>, CustomSignInManager<TUser>>();
+            services.TryAddScoped<ISecurityStampValidator, CustomSecurityStampValidator<TUser>>();
             services.TryAddSingleton<IdentityMarkerService>();
         }
     }
