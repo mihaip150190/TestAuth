@@ -85,7 +85,7 @@
 
             function register(user) {
                 debugger;
-                user.confirmPassword = user.password;
+                user.ConfirmPassword = user.Password;
                 LoginService.register(user)
                     .then(function (response) {
                         if (response.status === 200)

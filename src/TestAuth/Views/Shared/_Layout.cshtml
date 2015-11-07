@@ -21,17 +21,17 @@
         </environment>
     </head>
     <body ng-controller="MainCtrl as main" ng-cloak>
-        <nav class="navbar navbar-default">
-            <button ng-if="main.currentUser" class="btn btn-default navbar-btn"
-                    ng-click="main.logout()">
-                Logout <strong>{{main.currentUser.email}}</strong>
-            </button>
-            <a ng-if="!main.currentUser" class="btn btn-default navbar-btn"
-                    ui-sref="login">
-                Login
-            </a>
-        </nav>
         <div class="container-fluid">
+            <nav class="navbar navbar-default">
+                <button ng-if="main.currentUser" class="btn btn-default navbar-btn"
+                        ng-click="main.logout()">
+                    Logout <strong>{{main.currentUser.Email}}</strong>
+                </button>
+                <a ng-if="!main.currentUser" class="btn btn-default navbar-btn"
+                   ui-sref="login">
+                    Login
+                </a>
+            </nav>
             <div class="row">
                 <div ui-view>
                     @RenderBody()

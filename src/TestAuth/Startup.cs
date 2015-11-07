@@ -11,6 +11,13 @@ using Microsoft.AspNet.Identity;
 using Microsoft.Framework.DependencyInjection.Extensions;
 using TestAuth.Authentication;
 using TestAuth.Extensions;
+using Microsoft.AspNet.Mvc;
+using Microsoft.AspNet.Mvc.Formatters;
+using System.Linq;
+using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json;
+using Microsoft.AspNet.Http;
+using System.Threading.Tasks;
 
 namespace TestAuth
 {
@@ -53,12 +60,32 @@ namespace TestAuth
             // Add MVC services to the services container.
             services.AddMvc();
 
+            services.Configure<MvcOptions>(options =>
+            {
+                var formatter = options.OutputFormatters.FirstOrDefault(
+                  f => f is JsonOutputFormatter);
+
+                var jsonFormatter = formatter as JsonOutputFormatter;
+                if (jsonFormatter != null)
+                {
+                    jsonFormatter.SerializerSettings.ContractResolver =
+                      new CamelCasePropertyNamesContractResolver();
+                    jsonFormatter.SerializerSettings.NullValueHandling =
+                      NullValueHandling.Ignore;
+                }
+            });
+
+            services.Configure<IdentityCookieOptions>(options =>
+            {
+                options.ApplicationCookie.LoginPath = PathString.Empty;
+            });
+
             // Uncomment the following line to add Web API services which makes it easier to port Web API 2 controllers.
             // You will also need to add the Microsoft.AspNet.Mvc.WebApiCompatShim package to the 'dependencies' section of project.json.
             // services.AddWebApiConventions();
 
             // Register application services.
-            
+
         }
 
         // Configure is called after ConfigureServices is called.
@@ -92,6 +119,7 @@ namespace TestAuth
 
             // Add cookie-based authentication to the request pipeline.
             app.UseIdentity();
+           
 
             // Add MVC to the request pipeline.
             app.UseMvc(routes =>
@@ -102,6 +130,11 @@ namespace TestAuth
 
                 // Uncomment the following line to add a route for porting Web API 2 controllers.
                 // routes.MapWebApiRoute("DefaultApi", "api/{controller}/{id?}");
+            });
+
+            app.Run(context =>
+            {
+                return Task.FromResult(0);
             });
         }
     }
