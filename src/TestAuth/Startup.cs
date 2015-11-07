@@ -25,6 +25,8 @@ namespace TestAuth
     {
         public Startup(IHostingEnvironment env, IApplicationEnvironment appEnv)
         {
+
+
             // Setup configuration sources.
 
             var builder = new ConfigurationBuilder()
