@@ -18,11 +18,18 @@ using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json;
 using Microsoft.AspNet.Http;
 using System.Threading.Tasks;
+using System;
+using Microsoft.AspNet.Authorization;
+using Microsoft.AspNet.Authentication.JwtBearer;
 
 namespace TestAuth
 {
     public partial class Startup
     {
+        const string TokenAudience = "ExampleAudience";
+        const string TokenIssuer = "ExampleIssuer";
+        private TokenAuthOptions tokenOptions;
+
         public Startup(IHostingEnvironment env, IApplicationEnvironment appEnv)
         {
             // Setup configuration sources.
@@ -57,8 +64,13 @@ namespace TestAuth
             // Add Identity services to the services container.
             services.AddCustomIdentity<CustomUser>();
 
-            // Add MVC services to the services container.
-            services.AddMvc();
+            // Enable the use of an [Authorize("Bearer")] attribute on methods and classes to protect.
+            services.AddAuthorization(auth =>
+            {
+                auth.AddPolicy("Bearer", new AuthorizationPolicyBuilder()
+                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme‌​)
+                    .RequireAuthenticatedUser().Build());
+            });
 
             services.Configure<MvcOptions>(options =>
             {
@@ -75,17 +87,17 @@ namespace TestAuth
                 }
             });
 
-            services.Configure<IdentityCookieOptions>(options =>
+            tokenOptions = new TokenAuthOptions()
             {
-                options.ApplicationCookie.LoginPath = PathString.Empty;
-            });
+                Audience = TokenAudience,
+                Issuer = TokenIssuer
+            };
 
-            // Uncomment the following line to add Web API services which makes it easier to port Web API 2 controllers.
-            // You will also need to add the Microsoft.AspNet.Mvc.WebApiCompatShim package to the 'dependencies' section of project.json.
-            // services.AddWebApiConventions();
+            // Save the token options into an instance so they're accessible to the 
+            // controller.
+            services.AddInstance(tokenOptions);
 
-            // Register application services.
-
+            services.AddMvc();
         }
 
         // Configure is called after ConfigureServices is called.
@@ -118,8 +130,27 @@ namespace TestAuth
             app.UseStaticFiles();
 
             // Add cookie-based authentication to the request pipeline.
-            app.UseIdentity();
-           
+            //app.UseIdentity();
+
+            app.UseJwtBearerAuthentication(options =>
+            {
+                // Basic settings - signing key to validate with, audience and issuer.
+                //options.TokenValidationParameters.IssuerSigningKey = key;
+                options.TokenValidationParameters.ValidAudience = tokenOptions.Audience;
+                options.TokenValidationParameters.ValidIssuer = tokenOptions.Issuer;
+
+                // When receiving a token, check that we've signed it.
+                //options.TokenValidationParameters.ValidateSignature = true;
+
+                // When receiving a token, check that it is still valid.
+                options.TokenValidationParameters.ValidateLifetime = true;
+
+                // This defines the maximum allowable clock skew - i.e. provides a tolerance on the token expiry time 
+                // when validating the lifetime. As we're creating the tokens locally and validating them on the same 
+                // machines which should have synchronised time, this can be set to zero. Where external tokens are
+                // used, some leeway here could be useful.
+                options.TokenValidationParameters.ClockSkew = TimeSpan.FromMinutes(0);
+            });
 
             // Add MVC to the request pipeline.
             app.UseMvc(routes =>
@@ -130,11 +161,6 @@ namespace TestAuth
 
                 // Uncomment the following line to add a route for porting Web API 2 controllers.
                 // routes.MapWebApiRoute("DefaultApi", "api/{controller}/{id?}");
-            });
-
-            app.Run(context =>
-            {
-                return Task.FromResult(0);
             });
         }
     }
