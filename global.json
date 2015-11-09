@@ -1,5 +1,5 @@
-﻿{
-  "projects": [ "src", "test" ],
+{
+    "projects": [ "src", "test", "C:/Users/Admin/Desktop/Security-1.0.0-beta8/Security-1.0.0-beta8/src" ],
   "sdk": {
     "version": "1.0.0-beta8"
   }
